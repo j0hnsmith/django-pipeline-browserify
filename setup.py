@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+import io
 from setuptools import setup, find_packages
 
 description = """
@@ -9,7 +10,7 @@ setup(
     name='django-pipeline-browserify',
     version='0.1.0',
     description=description,
-    long_description=description,
+    long_description=io.open('README.rst', encoding='utf-8').read(),
     author='j0hnsmith',
     url='https://github.com/j0hnsmith/django-pipeline-browserify',
     packages=find_packages(),
