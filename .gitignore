@@ -1,0 +1,3 @@
+*.pyc
+.idea
+django_pipeline_browserify.egg-info
