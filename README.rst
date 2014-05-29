@@ -19,6 +19,10 @@ To add source maps during development (or any other browserify args)::
     if DEBUG:
         PIPELINE_BROWSERIFY_ARGUMENTS = '-d'
 
+To add variable assignments before the browserify command::
+
+    PIPELINE_BROWSERIFY_VARS = 'NODE_ENV=production'
+
 **Important:** give your entry-point file a `.browserify.js` extension::
 
     PIPELINE_JS = {
