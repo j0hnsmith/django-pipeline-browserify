@@ -8,7 +8,7 @@ django-pipeline compiler for browserify, requires browserify to be installed.
 
 setup(
     name='django-pipeline-browserify',
-    version='0.1.0',
+    version='0.2.0',
     description=description,
     long_description=io.open('README.rst', encoding='utf-8').read(),
     author='j0hnsmith',
