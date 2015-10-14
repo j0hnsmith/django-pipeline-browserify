@@ -30,6 +30,21 @@ class BrowserifyCompiler(SubProcessCompiler):
         return self.execute_command(command, cwd=dirname(infile))
 
     def is_outdated(self, infile, outfile):
+        """Check if the input file is outdated.
+
+        The difficulty with the default implementation is that any file that is
+        `require`d from the entry-point file will not trigger a recompile if it
+        is modified. This overloaded version of the method corrects this by generating
+        a list of all required files that are also a part of the storage manifest
+        and checking if they've been modified since the last compile.
+
+        The command used to generate the list of dependencies is the same as the compile
+        command but includes the `--deps` option.
+
+        WARNING: It seems to me that just generating the dependencies may take just
+        as long as actually compiling, which would mean we would be better off just
+        forcing a compile every time.
+        """
 
         # Check for missing file or modified entry-point file.
         if super(BrowserifyCompiler, self).is_outdated(infile, outfile):
