@@ -4,7 +4,6 @@ from pipeline.compilers import SubProcessCompiler
 from os.path import dirname
 import json
 from django.conf import settings
-from django.contrib.staticfiles.finders import find as static_find
 from django.core.exceptions import SuspiciousFileOperation
 
 
