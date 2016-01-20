@@ -15,11 +15,12 @@ class BrowserifyCompiler(SubProcessCompiler):
             # File doesn't need to be recompiled
             return
         pipeline_settings = getattr(settings, 'PIPELINE', {})
-        command = "%s %s %s -o %s" % (
+        command = "%s %s %s %s -o %s" % (
             getattr(pipeline_settings, 'BROWSERIFY_VARS', ''),
             getattr(pipeline_settings, 'BROWSERIFY_BINARY', '/usr/bin/env browserify'),
             getattr(pipeline_settings, 'BROWSERIFY_ARGUMENTS', ''),
             infile,   
+            outfile,
         )
         print('\ncommand:', command)
         return self.execute_command(command.split(), cwd=dirname(infile))

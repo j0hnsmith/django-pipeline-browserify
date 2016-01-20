@@ -10,8 +10,10 @@ To install it::
 
 And add it as a compiler to pipeline in your django `settings.py`::
 
-    PIPELINE_COMPILERS = (
-        'pipeline_browserify.compiler.BrowserifyCompiler',
+    PIPELINE = {
+        # ...
+        'COMPILERS': ('pipeline_browserify.compiler.BrowserifyCompiler', ),
+        # ...
     )
 
 To add source maps during development (or any other browserify args)::
