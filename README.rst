@@ -32,7 +32,7 @@ To add variable assignments before the browserify command::
                 'source_filenames' : (
                     'js/entry-point.browserify.js',
                 ),
-                'output_filename': 'js/browserified.js',
+                'output_filename': 'js/entry-point.js',
             },
         }
     }
