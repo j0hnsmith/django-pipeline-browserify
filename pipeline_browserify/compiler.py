@@ -2,9 +2,8 @@ from pipeline.compilers import SubProcessCompiler
 from os.path import dirname
 from django.conf import settings
 
-
 class BrowserifyCompiler(SubProcessCompiler):
-    output_extension = 'js'
+    output_extension = 'browserified.js'
 
     def match_file(self, path):
         print('\nmatching file:', path)
@@ -16,9 +15,9 @@ class BrowserifyCompiler(SubProcessCompiler):
             return
         pipeline_settings = getattr(settings, 'PIPELINE', {})
         command = "%s %s %s %s -o %s" % (
-            getattr(pipeline_settings, 'BROWSERIFY_VARS', ''),
-            getattr(pipeline_settings, 'BROWSERIFY_BINARY', '/usr/bin/env browserify'),
-            getattr(pipeline_settings, 'BROWSERIFY_ARGUMENTS', ''),
+            pipeline_settings.get('BROWSERIFY_VARS', ''),
+            pipeline_settings.get('BROWSERIFY_BINARY', '/usr/bin/env browserify'),
+            pipeline_settings.get('BROWSERIFY_ARGUMENTS', ''),
             infile,   
             outfile,
         )
