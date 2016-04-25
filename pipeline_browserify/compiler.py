@@ -1,33 +1,30 @@
-from __future__ import print_function
-
 from pipeline.compilers import SubProcessCompiler
 from os.path import dirname
 import json
 from django.conf import settings
 from django.core.exceptions import SuspiciousFileOperation
 
-
 class BrowserifyCompiler(SubProcessCompiler):
     output_extension = 'browserified.js'
 
     def match_file(self, path):
-        # print('\nmatching file:', path)
+        print('\nmatching file:', path)
         return path.endswith('.browserify.js')
 
     def compile_file(self, infile, outfile, outdated=False, force=False):
         if not force and not outdated:
             # File doesn't need to be recompiled
             return
-
-        command = "%s %s %s %s > %s" % (
-            getattr(settings, 'PIPELINE_BROWSERIFY_VARS', ''),
-            getattr(settings, 'PIPELINE_BROWSERIFY_BINARY', '/usr/bin/env browserify'),
-            getattr(settings, 'PIPELINE_BROWSERIFY_ARGUMENTS', ''),
-            infile,
-            outfile
+        pipeline_settings = getattr(settings, 'PIPELINE', {})
+        command = "%s %s %s %s -o %s" % (
+            pipeline_settings.get('BROWSERIFY_VARS', ''),
+            pipeline_settings.get('BROWSERIFY_BINARY', '/usr/bin/env browserify'),
+            pipeline_settings.get('BROWSERIFY_ARGUMENTS', ''),
+            infile,   
+            outfile,
         )
-        # print('\ncommand:', command)
-        return self.execute_command(command, cwd=dirname(infile))
+        print('\ncommand:', command)
+        return self.execute_command(command.split(), cwd=dirname(infile))
 
     def is_outdated(self, infile, outfile):
         """Check if the input file is outdated.

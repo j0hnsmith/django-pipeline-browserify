@@ -10,28 +10,33 @@ To install it::
 
 And add it as a compiler to pipeline in your django `settings.py`::
 
-    PIPELINE_COMPILERS = (
-        'pipeline_browserify.compiler.BrowserifyCompiler',
+    PIPELINE = {
+        # ...
+        'COMPILERS': ('pipeline_browserify.compiler.BrowserifyCompiler', ),
+        # ...
     )
 
 To add source maps during development (or any other browserify args)::
 
     if DEBUG:
-        PIPELINE_BROWSERIFY_ARGUMENTS = '-d'
+        PIPELINE['BROWSERIFY_ARGUMENTS'] = '-d'
 
 To add variable assignments before the browserify command::
 
-    PIPELINE_BROWSERIFY_VARS = 'NODE_ENV=production'
+    PIPELINE['BROWSERIFY_VARS'] = 'NODE_ENV=production'
 
 **Important:** give your entry-point file a `.browserify.js` extension::
 
-    PIPELINE_JS = {
-        'browserify': {
-            'source_filenames' : (
-                'js/entry-point.browserify.js',
-            ),
-            'output_filename': 'js/browserified.js',
-        },
+    PIPELINE = {
+        # ...
+        'javascript':{
+            'browserify': {
+                'source_filenames' : (
+                    'js/entry-point.browserify.js',
+                ),
+                'output_filename': 'js/entry-point.js',
+            },
+        }
     }
 
 To suggest a feature or report a bug:
