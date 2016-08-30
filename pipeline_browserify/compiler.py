@@ -27,17 +27,6 @@ class BrowserifyCompiler(SubProcessCompiler):
             outfile,
         )
 
-        '''
-        A bit of a hack, but necessary because if the first element in command is an empty str,
-        then a PermissionError will be raised by subprocess.Popen in execute_command. This is because
-        the first element in command is the program Popen tries to run
-
-        This is unneccesary after a PR in Django-Pipeline (https://github.com/jazzband/django-pipeline/pull/590)
-        is merged; until then, this can be used
-        '''
-        if command[0] == '':
-            command = command[1:]
-
         return self.execute_command(command, cwd=dirname(infile))
 
     def is_outdated(self, infile, outfile):
@@ -72,9 +61,6 @@ class BrowserifyCompiler(SubProcessCompiler):
                 "--deps",
                 self.storage.path(infile),
             )
-
-            if command[0] == '':
-                command = command[1:]
 
             with NamedTemporaryFile(delete=False, dir=dirname(outfile)) as dep_json:
                 self.execute_command(command, stdout_captured=dep_json.name)
