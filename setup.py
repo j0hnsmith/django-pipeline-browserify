@@ -13,7 +13,7 @@ setup(
     long_description=io.open('README.rst', encoding='utf-8').read(),
     author='j0hnsmith',
     url='https://github.com/j0hnsmith/django-pipeline-browserify',
-    install_requires=['django-pipeline>=1.6.0'],
+    install_requires=['django-pipeline>=1.6.9'],
     packages=find_packages(),
     classifiers=[
         'Environment :: Web Environment',
