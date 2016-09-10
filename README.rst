@@ -1,7 +1,7 @@
 Django Pipeline Browserify
 ==========================
 
-django-pipeline-browserify is a compiler for `django-pipeline <https://github.com/cyberdelia/django-pipeline>`_. Making it really easy to use browserify with Django via pipeline.
+django-pipeline-browserify is a compiler for `django-pipeline <https://github.com/cyberdelia/django-pipeline>`_ (requires 16.9+). Making it really easy to use browserify with Django via pipeline.
 
 To install it::
 
