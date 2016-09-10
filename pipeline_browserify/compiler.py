@@ -1,30 +1,33 @@
-from pipeline.compilers import SubProcessCompiler
-from os.path import dirname
 import json
-from django.conf import settings
+import os
+
+from os.path import dirname
+from tempfile import NamedTemporaryFile
+
 from django.core.exceptions import SuspiciousFileOperation
+
+from pipeline.conf import settings as pipeline_settings
+from pipeline.compilers import SubProcessCompiler
 
 class BrowserifyCompiler(SubProcessCompiler):
     output_extension = 'browserified.js'
 
     def match_file(self, path):
-        print('\nmatching file:', path)
         return path.endswith('.browserify.js')
 
     def compile_file(self, infile, outfile, outdated=False, force=False):
         if not force and not outdated:
-            # File doesn't need to be recompiled
-            return
-        pipeline_settings = getattr(settings, 'PIPELINE', {})
-        command = "%s %s %s %s -o %s" % (
+            return # File doesn't need to be recompiled
+        command = (
             pipeline_settings.get('BROWSERIFY_VARS', ''),
             pipeline_settings.get('BROWSERIFY_BINARY', '/usr/bin/env browserify'),
             pipeline_settings.get('BROWSERIFY_ARGUMENTS', ''),
-            infile,   
+            infile,
+            "-o",
             outfile,
         )
-        print('\ncommand:', command)
-        return self.execute_command(command.split(), cwd=dirname(infile))
+
+        return self.execute_command(command, cwd=dirname(infile))
 
     def is_outdated(self, infile, outfile):
         """Check if the input file is outdated.
@@ -50,29 +53,32 @@ class BrowserifyCompiler(SubProcessCompiler):
         # Check if we've already calculated dependencies.
         deps = getattr(self, '_deps', None)
         if not deps:
-
             # Collect dependency information.
-            command = "%s %s %s --deps %s" % (
-                getattr(settings, 'PIPELINE_BROWSERIFY_VARS', ''),
-                getattr(settings, 'PIPELINE_BROWSERIFY_BINARY', '/usr/bin/env browserify'),
-                getattr(settings, 'PIPELINE_BROWSERIFY_ARGUMENTS', ''),
+            command = (
+                pipeline_settings.get('BROWSERIFY_VARS', ''),
+                pipeline_settings.get('BROWSERIFY_BINARY', '/usr/bin/env browserify'),
+                pipeline_settings.get('BROWSERIFY_ARGUMENTS', ''),
+                "--deps",
                 self.storage.path(infile),
             )
-            dep_json = self.execute_command(command) #, cwd=dirname(infile))
 
-            # Process the output data. It's JSON, and the file's path is coded
-            # in the "file" field. We also want to save the content of each file
-            # so we can check if they're outdated, which is coded under "source".
-            deps = []
-            for dep in json.loads(dep_json.decode()):
+            with NamedTemporaryFile(delete=False, dir=dirname(outfile)) as dep_json:
+                self.execute_command(command, stdout_captured=dep_json.name)
 
-                # Is this file managed by the storage?
-                try:
-                    exists = self.storage.exists(dep['file'])
-                except SuspiciousFileOperation:
-                    exists = None
-                if exists == True or exists == False:
-                    deps.append(dep['file'])
+                # Process the output data. It's JSON, and the file's path is coded
+                # in the "file" field. We also want to save the content of each file
+                # so we can check if they're outdated, which is coded under "source".
+                deps = []
+                with open(dep_json.name) as command_output:
+                    for dep in json.loads(command_output.read()):
+                        # Is this file managed by the storage?
+                        try:
+                            if self.storage.exists(dep['file']):
+                                deps.append(dep['file'])
+                        except SuspiciousFileOperation:
+                            pass
+                # dep_json must be removed afterwards
+                os.remove(dep_json.name)
 
             # Cache the dependencies for the next possible run.
             self._deps = deps
