@@ -2,6 +2,7 @@ from pipeline.compilers import SubProcessCompiler
 from django.conf import settings
 from django.core.exceptions import SuspiciousFileOperation
 from pipeline.exceptions import CompilerError
+from warnings import warn
 
 class BrowserifyCompiler(SubProcessCompiler):
     output_extension = 'browserified.js'
@@ -26,23 +27,27 @@ class BrowserifyCompiler(SubProcessCompiler):
     def _get_cmd_parts(self):
         pipeline_settings = getattr(settings, 'PIPELINE', {})
         tool = pipeline_settings.get('BROWSERIFY_BINARY', "/usr/bin/env browserify")
-        args = pipeline_settings.get('BROWSERIFY_ARGUMENTS', [])
-        if not isinstance(args, list):
-            args = args.split()
         
-        env = pipeline_settings.get('BROWSERIFY_VARS', {})
-        if not isinstance(env, dict):
-            env = dict(map(lambda s: s.split('='), env.split()))
-        if len(env):
-            # even if there's custom variables, we need to pass along the original environment
+        old_args = pipeline_settings.get('BROWSERIFY_ARGUMENTS', '')
+        if old_args:
+            warn("You are using the string-based BROWSERIFY_ARGUMENTS setting. Please migrate to providing a list of arguments via BROWSERIFY_ARGS instead.", DeprecationWarning)
+            args = old_args.split()
+        else:
+            args = pipeline_settings.get('BROWSERIFY_ARGS', [])
+        
+        old_env = pipeline_settings.get('BROWSERIFY_VARS', '')
+        if old_env:
+            warn("You are using the string-based BROWSERIFY_VARS setting. Please migrate to providing a dict of environment variables via BROWSERIFY_ENV instead.", DeprecationWarning)
+            env = dict(map(lambda s: s.split('='), old_env.split()))
+        else:
+            env = pipeline_settings.get('BROWSERIFY_ENV', None)
+        if env:
+            # when there's custom variables, we need to explicitly pass along the original environment
             import os
             _env = {}
             _env.update(os.environ)
             _env.update(env)
             env = _env
-        else:
-            # drop any empty dict and let subprocess retain environment automatically
-            env = None
         
         return tool, args, env
     

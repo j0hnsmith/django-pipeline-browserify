@@ -19,11 +19,25 @@ And add it as a compiler to pipeline in your django `settings.py`::
 To add source maps during development (or any other browserify args)::
 
     if DEBUG:
-        PIPELINE['BROWSERIFY_ARGUMENTS'] = ['-d']
+        PIPELINE['BROWSERIFY_ARGS'] = ['-d']
 
-To add variable assignments before the browserify command::
+Passing arguments as an array makes sure they are safely unambiguous, but the way browserify lets you pass nested arguments within brackets can make this very tedious::
+    
+    # this is very unreadable, and hard to maintain!
+    PIPELINE['BROWSERIFY_ARGS'] = ['--transform', '[', 'babelify', '--presets', '[', 'es2015', 'react', ']', '--plugins', '[', 'transform-object-rest-spread', 'transform-class-properties', ']', ']']
 
-    PIPELINE['BROWSERIFY_VARS'] = {'NODE_ENV':'production'}
+To avoid this, when you know that no individual argument has a space within it, simply split the arguments yourself::
+
+    # the easy way :-)
+    PIPELINE['BROWSERIFY_ARGS'] = "--transform [ babelify --presets [ es2015 react ] --plugins [ transform-object-rest-spread transform-class-properties ] ]".split()
+
+
+To set environment varaibles specific to the browserify command::
+
+    PIPELINE['BROWSERIFY_ENV'] = {'NODE_ENV':'production'}
+
+(Note that for an actual production build, this example is not sufficient. You'll probably want to use a transform like loose-envify so the minifier can optimize out debug statements. Browserify doesn't usually pass environment variables like that shown above into the compiled code; but it may effect the runtime behavior of browserify itself.)
+
 
 **Important:** give your entry-point file a `.browserify.js` extension::
 
