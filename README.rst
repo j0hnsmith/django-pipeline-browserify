@@ -38,6 +38,13 @@ To set environment varaibles specific to the browserify command::
 
 (Note that for an actual production build, this example is not sufficient. You'll probably want to use a transform like loose-envify so the minifier can optimize out debug statements. Browserify doesn't usually pass environment variables like that shown above into the compiled code; but it may effect the runtime behavior of browserify itself.)
 
+To use a local install of the browserify command line utility (or if it is not in your PATH for some other reason), you can override the command used::
+
+    PIPELINE['BROWSERIFY_BINARY'] = "/custom/path/to/browserify"
+    
+    # ...or perhaps something like this:
+    PIPELINE['BROWSERIFY_BINARY'] = os.path.join(REPO_ROOT, "node_modules/.bin", "browserify"),
+
 
 **Important:** give your entry-point file a `.browserify.js` extension::
 

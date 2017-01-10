@@ -26,7 +26,7 @@ class BrowserifyCompiler(SubProcessCompiler):
     
     def _get_cmd_parts(self):
         pipeline_settings = getattr(settings, 'PIPELINE', {})
-        tool = pipeline_settings.get('BROWSERIFY_BINARY', "/usr/bin/env browserify")
+        tool = pipeline_settings.get('BROWSERIFY_BINARY', "browserify")
         
         old_args = pipeline_settings.get('BROWSERIFY_ARGUMENTS', '')
         if old_args:
