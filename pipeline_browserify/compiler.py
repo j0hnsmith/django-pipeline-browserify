@@ -15,7 +15,10 @@ class BrowserifyCompiler(SubProcessCompiler):
     # similar to old removed in https://github.com/jazzband/django-pipeline/commit/1f6b48ae74026a12f955f2f15f9f08823d744515
     def simple_execute_command(self, cmd, **kwargs):
         import subprocess
-        pipe = subprocess.Popen(cmd, stdout=subprocess.PIPE, stdin=subprocess.PIPE, stderr=subprocess.PIPE, **kwargs)
+        try:
+            pipe = subprocess.Popen(cmd, stdout=subprocess.PIPE, stdin=subprocess.PIPE, stderr=subprocess.PIPE, **kwargs)
+        except OSError as e:
+            raise CompilerError("Compiler failed to execute. (%s)" % e, command=cmd, error_output="Executing the compiler resulted in an %s from the system.\n\nThis is most likely due to the `browserify` executable not being found in your PATH (if it is installed globally), or a misconfigured BROWSERIFY_BINARY setting (if you are using a non-global install)." % repr(e))
         stdout, stderr = pipe.communicate()
         if self.verbose:
             print stdout
