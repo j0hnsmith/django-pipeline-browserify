@@ -19,11 +19,11 @@ And add it as a compiler to pipeline in your django `settings.py`::
 To add source maps during development (or any other browserify args)::
 
     if DEBUG:
-        PIPELINE['BROWSERIFY_ARGUMENTS'] = '-d'
+        PIPELINE['BROWSERIFY_ARGUMENTS'] = ['-d']
 
 To add variable assignments before the browserify command::
 
-    PIPELINE['BROWSERIFY_VARS'] = 'NODE_ENV=production'
+    PIPELINE['BROWSERIFY_VARS'] = {'NODE_ENV':'production'}
 
 **Important:** give your entry-point file a `.browserify.js` extension::
 
