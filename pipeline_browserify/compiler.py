@@ -21,8 +21,8 @@ class BrowserifyCompiler(SubProcessCompiler):
             raise CompilerError("Compiler failed to execute. (%s)" % e, command=cmd, error_output="Executing the compiler resulted in an %s from the system.\n\nThis is most likely due to the `browserify` executable not being found in your PATH (if it is installed globally), or a misconfigured BROWSERIFY_BINARY setting (if you are using a non-global install)." % repr(e))
         stdout, stderr = pipe.communicate()
         if self.verbose:
-            print stdout
-            print stderr
+            print(stdout)
+            print(stderr)
         if pipe.returncode != 0:
             raise CompilerError("Compiler returned non-zero exit status %i" % pipe.returncode, command=cmd, error_output=stderr)
         return stdout
@@ -63,7 +63,7 @@ class BrowserifyCompiler(SubProcessCompiler):
         cmd = [tool] + args
         
         if self.verbose:
-            print "compile_file command:", cmd, env
+            print("compile_file command:", cmd, env)
         self.simple_execute_command(cmd, env=env)
     
     def is_outdated(self, infile, outfile):
@@ -92,14 +92,14 @@ class BrowserifyCompiler(SubProcessCompiler):
         args.extend(['--list', infile])
         cmd = [tool] + args
         if self.verbose:
-            print "is_outdated command:", cmd, env
+            print("is_outdated command:", cmd, env)
         dep_list = self.simple_execute_command(cmd, env=env)
         if self.verbose:
-            print "dep_list is:", dep_list
+            print("dep_list is:", dep_list)
         for dep_file in dep_list.strip().split('\n'):
             if super(BrowserifyCompiler, self).is_outdated(dep_file, outfile):
                 if self.verbose:
-                    print "Found dep_file \"%s\" updated." % dep_file
+                    print("Found dep_file \"%s\" updated." % dep_file)
                 return True
         
         return False
