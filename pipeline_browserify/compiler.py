@@ -59,8 +59,7 @@ class BrowserifyCompiler(SubProcessCompiler):
             return
         
         tool, args, env = self._get_cmd_parts()
-        args.extend([infile, '--outfile', outfile])
-        cmd = [tool] + args
+        cmd = [tool] + args + [infile, '--outfile', outfile]
         
         if self.verbose:
             print "compile_file command:", cmd, env
@@ -89,8 +88,7 @@ class BrowserifyCompiler(SubProcessCompiler):
         
         # Otherwise we need to see what dependencies there are now, and if they're modified.
         tool, args, env = self._get_cmd_parts()
-        args.extend(['--list', infile])
-        cmd = [tool] + args
+        cmd = [tool] + args + ['--list', infile]
         if self.verbose:
             print "is_outdated command:", cmd, env
         dep_list = self.simple_execute_command(cmd, env=env)
