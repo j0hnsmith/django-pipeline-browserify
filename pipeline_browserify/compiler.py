@@ -1,3 +1,5 @@
+from __future__ import print_function
+
 from pipeline.compilers import SubProcessCompiler
 from django.conf import settings
 from django.core.exceptions import SuspiciousFileOperation
