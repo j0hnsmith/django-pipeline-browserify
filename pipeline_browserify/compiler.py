@@ -1,3 +1,5 @@
+from __future__ import print_function
+
 from pipeline.compilers import SubProcessCompiler
 from django.conf import settings
 from django.core.exceptions import SuspiciousFileOperation
@@ -25,7 +27,7 @@ class BrowserifyCompiler(SubProcessCompiler):
             print(stderr)
         if pipe.returncode != 0:
             raise CompilerError("Compiler returned non-zero exit status %i" % pipe.returncode, command=cmd, error_output=stderr)
-        return stdout
+        return stdout.decode()
     
     def _get_cmd_parts(self):
         pipeline_settings = getattr(settings, 'PIPELINE', {})
